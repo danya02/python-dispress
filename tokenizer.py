@@ -15,6 +15,7 @@ class Tokenizer:
 
 class CharacterTokenizer(Tokenizer):
     sep = ''
+    name = 'char'
 
     def __init__(self):
         super().__init__()
@@ -33,4 +34,21 @@ class CharacterTokenizer(Tokenizer):
                 self.last_symbol_was_space = False
                 self.token_fetched(chunk)
 
+class WordTokenizer(Tokenizer):
+    sep = ' '
+    name = 'word'
+    def __init__(self):
+        super().__init__()
+        self.word_buffer = []
 
+    def read(self, chunk):
+        if len(chunk) != 1:
+            for char in chunk:
+                self.read(char)
+        else:
+            if chunk.isspace():
+                if self.word_buffer:
+                    self.token_fetched(''.join(self.word_buffer))
+                    self.word_buffer.clear()
+            else:
+                self.word_buffer.append(chunk)

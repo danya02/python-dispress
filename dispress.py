@@ -2,18 +2,18 @@ import random
 import tokenizer
 import tqdm
 import time
-import json
+import pickle
 
 source = 'test-source.txt'
 tok = tokenizer.CharacterTokenizer
-tokens_before_seek=20
+tokens_before_seek=5
 
 def dictchoice(d):
     return random.choice(list(d))
 
 try:
-    with open(source + '.tokens.json') as o:
-        token_positions = json.load(o)
+    with open(source + '.tokens-' + tok.name + '.pickle', 'rb') as o:
+        token_positions = pickle.load(o)
 except FileNotFoundError:
     token_positions = dict()
     tok_reader = tok()
@@ -32,8 +32,8 @@ except FileNotFoundError:
                 pb.update(len(chunk))
                 tok_reader.read(chunk)
                 chunk = file.read(1)
-    with open(source + '.tokens.json', 'w') as o:
-        json.dump(token_positions, o)
+    with open(source + '.tokens-' + tok.name + '.pickle', 'wb') as o:
+        pickle.dump(token_positions, o)
 
 tok_writer = tok()
 with open(source) as file:
